@@ -139,8 +139,7 @@ async function swap(connection: Connection, dlmm: DLMM, user: Keypair, amount: B
 }
 
 async function createNewPosition(connection: Connection, dlmm: DLMM, user: Keypair, newPosition: Keypair, xAmount: BN, yAmount: BN): Promise<void> {
-    // Reduce the bin range to be more conservative (from 10 to 5)
-    const totalIntervalRange = 5;
+    const totalIntervalRange = 20;
     const activeBin = await dlmm.getActiveBin();
     const maxBinId = activeBin.binId + totalIntervalRange;
     const minBinId = activeBin.binId - totalIntervalRange;
@@ -274,7 +273,7 @@ async function rebalancePosition(connection: Connection, dlmm: DLMM, user: Keypa
 
         // Wait for balances to update after swap
         console.log("Waiting for balances to update...");
-        await new Promise(resolve => setTimeout(resolve, 50000));
+        await new Promise(resolve => setTimeout(resolve, 15000));
         
         // Get final balances after swap
         const { xBalance: finalXBalance, yBalance: finalYBalance } = await getTokenBalances(connection, user, dlmm);
@@ -367,8 +366,8 @@ function startMonitoring(connection: Connection, dlmm: DLMM, user: Keypair): voi
     // Check immediately on start
     checkPositions(connection, dlmm, user);
 
-    // Then check every 3 minutes
-    checkInterval = setInterval(() => checkPositions(connection, dlmm, user), 3 * 60 * 1000);
+    // Then check every 1 minutes
+    checkInterval = setInterval(() => checkPositions(connection, dlmm, user), 1 * 60 * 1000);
 }
 
 function stopMonitoring(): void {
